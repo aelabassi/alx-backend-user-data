@@ -52,6 +52,21 @@ def get_db() -> connector.connection.MySQLConnection:
         password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''))
 
 
+def main() -> None:
+    """ obtain a database connection using get_db and retrieve all rows
+    """
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    fields = [i[0] for i in cursor.description]
+    logger = get_logger()
+    for row in cursor:
+        message = "; ".join([f"{f}={str(r)}" for r, f in zip(row, fields)])
+        logger.info(message.strip())
+    cursor.close()
+    db.close()
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -71,3 +86,7 @@ class RedactingFormatter(logging.Formatter):
         """
         return filter_datum(self.__fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
+
+
+if __name__ == "__main__":
+    main()
