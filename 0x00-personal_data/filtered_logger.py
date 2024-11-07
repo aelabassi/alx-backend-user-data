@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """ Regex-ing """
 import logging
+import os
 from typing import List
 import re
+from mysql import connector
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
@@ -38,6 +40,16 @@ def get_logger() -> logging.Logger:
     stream.setFormatter(formatter)
     logger.addHandler(stream)
     return logger
+
+
+def get_db() -> connector.connection.MySQLConnection:
+    """ returns a connector to the database
+    """
+    return connector.connection.MySQLConnection(
+        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
+        database=os.getenv('PERSONAL_DATA_DB_NAME', 'holberton'),
+        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
+        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''))
 
 
 class RedactingFormatter(logging.Formatter):
