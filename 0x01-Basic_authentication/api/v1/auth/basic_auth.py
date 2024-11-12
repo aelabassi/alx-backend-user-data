@@ -2,7 +2,7 @@
 """ Basic authentication module
 """
 from api.v1.auth.auth import Auth
-from typing import TypeVar
+from base64 import b64decode
 
 
 class BasicAuth(Auth):
@@ -24,9 +24,12 @@ class BasicAuth(Auth):
         """ decode_base64_authorization_header method
         """
         if base64_authorization_header is None or \
-           type(base64_authorization_header) is not str:
+           not isinstance(base64_authorization_header, str):
             return None
         try:
-            return base64_authorization_header.encode('utf-8').decode('base64')
+            encoded = base64_authorization_header.encode('utf-8')
+            decoded = b64decode(encoded)
+            decoded = decoded.decode('utf-8')
         except Exception:
             return None
+        return decoded
