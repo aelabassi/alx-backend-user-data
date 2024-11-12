@@ -11,13 +11,16 @@ class Auth:
         """
         if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
+        tmp_path = path
         if path[-1] != '/':
             path += '/'
         for excluded_path in excluded_paths:
             if excluded_path[-1] != '*':
-                excluded_path += '*'
-            if excluded_path == path:
-                return False
+                if tmp_path == excluded_path:
+                    return False
+            else:
+                if excluded_path[:-1] == path[:len(excluded_path) - 1]:
+                    return False
         if path in excluded_paths:
             return False
         return True
